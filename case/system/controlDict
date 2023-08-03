@@ -1,0 +1,123 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.1                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+libs
+(
+    "liblduSolvers.so"
+
+)
+application     boussinesqBuoyantFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         30;
+
+deltaT          0.2;
+
+writeControl    timeStep;
+
+writeInterval   20;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression uncompressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable yes;
+
+// ************************************************************************* //
+//Author
+    //Ehsan Golab, SUT. All rights reserved.
+
+InfoSwitches
+{
+    writePrecision  6;
+    writeJobInfo    0;
+    allowSystemOperations 1;
+}
+
+functions
+{
+    postProcess
+    {
+        functionObjectLibs	("libutilityFunctionObjects.so");
+        type			coded;
+        enabled			true;
+        outputControl		outputTime;//timeStep;//outputTime;
+        redirectType		postProcess;
+
+        codeInclude
+        #{
+            #include "fvCFD.H"
+        #};
+
+        codeOptions
+        #{
+            -I$(LIB_SRC)/finiteVolume/lnInclude \
+            -I$(LIB_SRC)/meshTools/lnInclude
+        #};
+
+        codeLibs
+        #{
+            -lmeshTools \
+            -lfiniteVolume
+        #};
+
+        code
+        #{
+            std::ofstream output;
+            output.open("postProcess.txt",std::ofstream::app);
+
+
+            //- constants
+            scalar charL = 0.1;
+            scalar kf = 0.0001;
+            scalar deltaTemp = 100.0;
+
+
+            //- lookup fields
+            const volScalarField& T = mesh().lookupObject<volScalarField>("T");
+            surfaceScalarField gradT = fvc::snGrad(T);
+
+
+            //- find id and compute Nusselt number
+            label rightID = T.mesh().boundaryMesh().findPatchID("right");
+            scalar rightArea = sum(T.mesh().magSf().boundaryField()[rightID]);
+            scalar rightHeatFluxAvg = sum(kf*gradT.boundaryField()[rightID]*T.mesh().magSf().boundaryField()[rightID])/rightArea;
+            scalar righthAvg = rightHeatFluxAvg/deltaTemp;
+            scalar NusseltAvg = (righthAvg*charL)/(kf);
+            Info << "NusseltAvg = " << NusseltAvg << "\n";
+
+
+            //- save data
+            output << NusseltAvg << "\n";
+            output.close();
+        #};
+    }
+
+}
+// ************************************************************************* //
