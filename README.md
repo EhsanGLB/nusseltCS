@@ -5,7 +5,7 @@ This is a code stream for Nusselt number based on foam-extend-4.1.
 ## Mathematical Relationships
 $$ Nu = {{h L} \over k} $$
 
-$$ h = {1 \over L} \int_0^L k \nabla T \ dx $$
+$$ h = {1 \over {L \Delta T}} \int_0^L k \nabla T \ dx $$
 
 Which $Nu$ and $U$ are helicity and velocity vector, respectively.
 
