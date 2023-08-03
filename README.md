@@ -7,7 +7,7 @@ $$ Nu = {{h L} \over k} $$
 
 $$ h = {1 \over {L \Delta T}} \int_0^L k \nabla T \ dx $$
 
-Which $Nu$ and $U$ are helicity and velocity vector, respectively.
+Which $Nu$, $h$, $L$, $k$, $\Delta T$ are Nusselt number, heat transfer coefficient, characteristic length, thermal conductivity, and temperature difference, respectively.
 
 
 ## Installation
