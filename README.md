@@ -20,7 +20,7 @@ git clone https://github.com/EhsanGLB/nusseltCS.git
 ## Getting Started
 1. First way
 ```bash
-blockMEsh
+blockMesh
 boussinesqBuoyantFoam
 ```
 
